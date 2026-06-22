@@ -4,13 +4,17 @@ import ec.edu.ups.icc.fundamentos01.users.dtos.CreateUserDto;
 import ec.edu.ups.icc.fundamentos01.users.dtos.UserResponseDto;
 import ec.edu.ups.icc.fundamentos01.users.models.UserModel;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 // Esta clase convierte entre modelos y dtos.
 // El mapper evita que el controlador copie manualmente los campos entre CreateUserDto, userModel.
 
 public class UserMapper {
+
     // Esta clase convierte el DTO en un UserModelo.
     public static UserModel toModel(CreateUserDto createUserDto) {
         UserModel userModel = new UserModel();
+
         userModel.setName(createUserDto.getName());
         userModel.setEmail(createUserDto.getEmail());
         userModel.setPassword(createUserDto.getPassword());

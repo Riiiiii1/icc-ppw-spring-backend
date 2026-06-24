@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Data
 public class ProductModel {
@@ -12,11 +13,13 @@ public class ProductModel {
     private Double price;
     private Integer stock;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean deleted;
 
-    public ProductModel (Long id, String name, Double price, Integer stock){
-      this.id=id;
-      this.name = name;
-      this.price = price;
-      this.stock = stock;
+    public ProductModel(Long id, String name, Double price, Integer stock) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
     }
 }

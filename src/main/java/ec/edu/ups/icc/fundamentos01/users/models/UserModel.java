@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Data
+@AllArgsConstructor
 public class UserModel {
     private Long id;
     private String name;
@@ -16,12 +17,10 @@ public class UserModel {
     private String password;
     private String passwordHash;
 
-    public UserModel(Long id, String name, String email, String password, String passwordHash) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.passwordHash = passwordHash;
-    }
+
+    private LocalDateTime updatedAt;
+
+    private boolean deleted;
+
 
 }

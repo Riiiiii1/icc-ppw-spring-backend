@@ -2,21 +2,46 @@ package ec.edu.ups.icc.fundamentos01.productos.mappers;
 
 import ec.edu.ups.icc.fundamentos01.productos.dtos.CreateProductDto;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.ProductResponseDto;
+import ec.edu.ups.icc.fundamentos01.productos.entities.ProductEntity;
 import ec.edu.ups.icc.fundamentos01.productos.models.ProductModel;
 
 public class ProductMapper {
 
-    public static ProductModel toModel(CreateProductDto createProductDto){
+
+    public static ProductModel toModelFormDTO(CreateProductDto dto) {
         ProductModel model = new ProductModel();
-        model.setName(createProductDto.getName());
-        model.setPrice(createProductDto.getPrice());
-        model.setStock(createProductDto.getStock());
+        model.setName(dto.getName());
+        model.setPrice(dto.getPrice());
+        model.setStock(dto.getStock());
         return model;
     }
-    public static ProductResponseDto toResponse(ProductModel productModel){
+
+    public static ProductModel toModelFromEntity(ProductEntity entity) {
+        ProductModel model = new ProductModel();
+        model.setId(entity.getId());
+        model.setName(entity.getName());
+        model.setPrice(entity.getPrice());
+        model.setStock(entity.getStock());
+        model.setCreatedAt(entity.getCreatedAt());
+        model.setUpdatedAt(entity.getUpdatedAt());
+        model.setDeleted(entity.isDeleted());
+        return model;
+    }
+
+
+    public static ProductEntity toEntityFromModel(ProductModel model) {
+        ProductEntity entity = new ProductEntity();
+        entity.setId(model.getId());
+        entity.setName(model.getName());
+        entity.setPrice(model.getPrice());
+        entity.setStock(model.getStock());
+        return entity;
+    }
+
+    public static ProductResponseDto toResponse(ProductModel model) {
         ProductResponseDto response = new ProductResponseDto();
-        response.setId(productModel.getId());
-        response.setName(productModel.getName());
+        response.setId(model.getId());
+        response.setName(model.getName());
         return response;
     }
 }

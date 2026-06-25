@@ -24,9 +24,6 @@ public class PartialUpdateUserDto {
     @Size(max = 150, message = "El email no debe superar los 150 caracteres")
     private String email;
 
-    // Constructor vacío
-
-    // Constructor lleno
-
-    // Getters y setters
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
+    private String password;
 }

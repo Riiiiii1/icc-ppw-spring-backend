@@ -59,7 +59,8 @@ public class UserMapper {
         entity.setId(model.getId());
         entity.setName(model.getName());
         entity.setEmail(model.getEmail());
-        entity.setPasswordHash(model.getPasswordHash());
+
+        entity.setPasswordHash(model.getPassword());
 
         return entity;
     }

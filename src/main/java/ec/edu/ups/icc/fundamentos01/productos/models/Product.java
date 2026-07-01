@@ -1,21 +1,19 @@
 package ec.edu.ups.icc.fundamentos01.productos.models;
 
+import ec.edu.ups.icc.fundamentos01.categories.dtos.CategoryResponseDto;
+import ec.edu.ups.icc.fundamentos01.categories.entities.CategoryEntity;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.CreateProductDto;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.PartialUpdateProductDto;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.ProductResponseDto;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.UpdateProductDto;
 import ec.edu.ups.icc.fundamentos01.productos.entities.ProductEntity;
+import ec.edu.ups.icc.fundamentos01.users.dtos.UserResponseDto;
+import ec.edu.ups.icc.fundamentos01.users.entities.UserEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/*
- * Modelo de dominio del recurso products.
- *
- * Ya no depende de un Mapper externo: sabe construirse a partir
- * de DTOs/Entity, y convertirse a Entity/DTO de respuesta.
- */
 @Data
 @NoArgsConstructor
 public class Product {
@@ -27,6 +25,8 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean deleted;
+    private UserEntity owner;
+    private CategoryEntity category;
 
     public static Product fromDto(CreateProductDto dto) {
         Product product = new Product();
@@ -45,6 +45,8 @@ public class Product {
         product.setCreatedAt(entity.getCreatedAt());
         product.setUpdatedAt(entity.getUpdatedAt());
         product.setDeleted(entity.isDeleted());
+        product.setOwner(entity.getOwner());
+        product.setCategory(entity.getCategory());
         return product;
     }
 
@@ -57,6 +59,8 @@ public class Product {
         entity.setCreatedAt(this.createdAt);
         entity.setUpdatedAt(this.updatedAt);
         entity.setDeleted(this.deleted);
+        entity.setOwner(this.owner);
+        entity.setCategory(this.category);
         return entity;
     }
 
@@ -64,6 +68,27 @@ public class Product {
         ProductResponseDto response = new ProductResponseDto();
         response.setId(this.id);
         response.setName(this.name);
+        response.setPrice(this.price);
+        response.setStock(this.stock);
+        response.setCreatedAt(this.createdAt);
+        response.setUpdatedAt(this.updatedAt);
+
+        if (this.owner != null) {
+            UserResponseDto ownerDto = new UserResponseDto();
+            ownerDto.setId(this.owner.getId());
+            ownerDto.setName(this.owner.getName());
+            ownerDto.setEmail(this.owner.getEmail());
+            response.setOwner(ownerDto);
+        }
+
+        if (this.category != null) {
+            CategoryResponseDto categoryDto = new CategoryResponseDto();
+            categoryDto.setId(this.category.getId());
+            categoryDto.setName(this.category.getName());
+            categoryDto.setDescription(this.category.getDescription());
+            response.setCategory(categoryDto);
+        }
+
         return response;
     }
 
@@ -79,6 +104,9 @@ public class Product {
         }
         if (dto.getPrice() != null) {
             this.price = dto.getPrice();
+        }
+        if (dto.getStock() != null) {
+            this.stock = dto.getStock();
         }
     }
 }

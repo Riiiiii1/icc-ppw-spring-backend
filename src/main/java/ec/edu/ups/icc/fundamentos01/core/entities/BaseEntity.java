@@ -34,7 +34,5 @@ public abstract class BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Constructor vacío
 
-    // Getters y setters
 }

@@ -1,10 +1,6 @@
 package ec.edu.ups.icc.fundamentos01.productos.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +15,16 @@ public class UpdateProductDto {
     private String name;
 
     @NotNull(message = "El precio es obligatorio")
-    @Positive(message = "El precio debe ser mayor a 0")
+    @DecimalMin(value = "0.0", inclusive = true, message = "El precio no puede ser negativo")
     private Double price;
 
     @NotNull(message = "El stock es obligatorio")
-    @PositiveOrZero(message = "El stock no puede ser negativo")
+    @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
+
+    @NotNull(message = "El ID de la categoría es obligatorio")
+    private Long categoryId;
+
+
+
 }

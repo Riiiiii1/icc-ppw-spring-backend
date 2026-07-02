@@ -5,17 +5,17 @@ import ec.edu.ups.icc.fundamentos01.categories.dtos.CreateCategoryDto;
 import ec.edu.ups.icc.fundamentos01.categories.dtos.UpdateCategoryDto;
 import ec.edu.ups.icc.fundamentos01.categories.services.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 public class CategoriesController {
-    private final CategoryService service;
+    @Autowired
+    private CategoryService service;
 
-    public CategoriesController(CategoryService service) {
-        this.service = service;
-    }
+
 
     @GetMapping
     public List<CategoryResponseDto> findAll() {

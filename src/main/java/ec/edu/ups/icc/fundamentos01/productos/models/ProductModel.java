@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
 @NoArgsConstructor
 @Data
-
 public class ProductModel {
 
     private Long id;

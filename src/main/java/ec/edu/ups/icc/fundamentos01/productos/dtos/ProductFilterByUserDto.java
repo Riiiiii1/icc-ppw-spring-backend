@@ -38,9 +38,7 @@ public class ProductFilterByUserDto {
         return true;
     }
 
-    /*
-     * Retorna true si el filtro name viene vacío.
-     */
+
     public boolean hasEmptyName() {
         return name == null || name.isBlank();
     }

@@ -2,12 +2,10 @@ package ec.edu.ups.icc.fundamentos01.productos.services;
 
 import ec.edu.ups.icc.fundamentos01.categories.entities.CategoryEntity;
 import ec.edu.ups.icc.fundamentos01.categories.repositories.CategoryRepository;
+import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.BadRequestException;
 import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.ConflictException;
 import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.NotFoundException;
-import ec.edu.ups.icc.fundamentos01.productos.dtos.CreateProductDto;
-import ec.edu.ups.icc.fundamentos01.productos.dtos.PartialUpdateProductDto;
-import ec.edu.ups.icc.fundamentos01.productos.dtos.ProductResponseDto;
-import ec.edu.ups.icc.fundamentos01.productos.dtos.UpdateProductDto;
+import ec.edu.ups.icc.fundamentos01.productos.dtos.*;
 import ec.edu.ups.icc.fundamentos01.productos.entities.ProductEntity;
 import ec.edu.ups.icc.fundamentos01.productos.mappers.ProductMapper;
 import ec.edu.ups.icc.fundamentos01.productos.models.ProductModel;
@@ -184,4 +182,99 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductMapper::toResponse)
                 .toList();
     }
+
+
+    @Override
+    public List<ProductResponseDto> findByUserIdWithFilters(
+            Long userId,
+            ProductFilterByUserDto filters
+    ) {
+        if (!userRepository.existsByIdAndDeletedFalse(userId)) {
+            throw new NotFoundException("User not found");
+        }
+
+        validateUserFilters(filters);
+
+        String name = normalizeName(filters.getName());
+
+        return productRepository.findByOwnerIdWithFilters(
+                        userId,
+                        name,
+                        filters.getMinPrice(),
+                        filters.getMaxPrice(),
+                        filters.getCategoryId()
+                )
+                .stream()
+                .map(ProductMapper::toModelFromEntity)
+                .map(ProductMapper::toResponse)
+                .toList();
+    }
+    @Override
+    public List<ProductResponseDto> findByCategoryIdWithFilters(
+            Long categoryId,
+            ProductFilterByCategoryDto filters
+    ) {
+        if (!categoryRepository.existsByIdAndDeletedFalse(categoryId)) {
+            throw new NotFoundException("Category not found");
+        }
+
+        validateFilters(filters);
+
+        String name = normalizeName(filters.getName());
+
+        return productRepository.findByCategoryIdWithFilters(
+                        categoryId,
+                        name,
+                        filters.getMinPrice(),
+                        filters.getMaxPrice(),
+                        filters.getUserId()
+                )
+                .stream()
+                .map(ProductMapper::toModelFromEntity)
+                .map(ProductMapper::toResponse)
+                .toList();
+    }
+
+    private void validateFilters(ProductFilterByCategoryDto filters) {
+
+        if (filters == null) {
+            return;
+        }
+
+        if (!filters.hasValidPriceRange()) {
+            throw new BadRequestException("El precio máximo debe ser mayor o igual al precio mínimo");
+        }
+
+        if (filters.getUserId() != null &&
+                !userRepository.existsByIdAndDeletedFalse(filters.getUserId())) {
+            throw new NotFoundException("User not found");
+        }
+    }
+    private void validateUserFilters(ProductFilterByUserDto filters) {
+
+        if (filters == null) {
+            return;
+        }
+
+        if (!filters.hasValidPriceRange()) {
+            throw new BadRequestException("El precio máximo debe ser mayor o igual al precio mínimo");
+        }
+
+        if (filters.getCategoryId() != null &&
+                !categoryRepository.existsByIdAndDeletedFalse(filters.getCategoryId())) {
+            throw new NotFoundException("Category not found");
+        }
+
+
+    }
+
+    private String normalizeName(String name) {
+
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+
+        return name.trim();
+    }
+
 }

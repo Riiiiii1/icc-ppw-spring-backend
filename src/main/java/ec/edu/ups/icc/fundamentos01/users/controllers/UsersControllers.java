@@ -6,6 +6,7 @@ import ec.edu.ups.icc.fundamentos01.users.dtos.UpdateUserDto;
 import ec.edu.ups.icc.fundamentos01.users.dtos.UserResponseDto;
 import ec.edu.ups.icc.fundamentos01.users.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,13 +15,9 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UsersControllers {
 
-    // Declaramos la dependencia del servicio
-    private final UserService userService;
+    @Autowired
+    private  UserService userService;
 
-    // Inyección de dependencias mediante el constructor (La mejor práctica en Spring Boot)
-    public UsersControllers(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public List<UserResponseDto> findAll() {
@@ -46,9 +43,12 @@ public class UsersControllers {
     public UserResponseDto partialUpdate(@PathVariable Long id, @RequestBody PartialUpdateUserDto dto) {
         return userService.partialUpdate(id, dto);
     }
+    // users/ids/products
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         userService.delete(id);
     }
+
+
 }

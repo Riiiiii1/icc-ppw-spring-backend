@@ -41,16 +41,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDto create(CreateCategoryDto dto) {
-
+        // EXISTE EN LA BASE DE DATOS?
         if (categoryRepository.existsByNameIgnoreCaseAndDeletedFalse(dto.getName())) {
             throw new ConflictException("Category name already registered");
         }
-
+        // INSTANCIAR LA ENTIDAD
         CategoryEntity entity = new CategoryEntity();
-
+        // CARGAS LOS DATOS EN LA ENTIDAD
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
-
+        // CREAR UN OBJETO SAVED PARA GUARDAR LA ENTIDAD RECIEN CARGADA A UN METODO NATIVO LLAMADO SAVE() QUE ESTA EN REPOSITORIO
         CategoryEntity saved = categoryRepository.save(entity);
 
         return toResponse(saved);
@@ -75,6 +75,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Long id) {
+        // CREAR UNA ENTIDAD DE CATEGORIA, Y A ESTA LE PASO EL PARAMETRO ID, QUE CONSUME EL REPOSITORIO  findById()
+        // PARA BUSCAR EL REGISTRO
         CategoryEntity entity = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
 
@@ -88,14 +90,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    // ESTO DEBERIA SER EN UN MAPPER
+    // ESTO DEBERIA SER EN UN MAPPER PERO YA LO TENGO LOCAL
+    // LE PASO LA ENTIDAD QUE RETORNA EL DTO RESPONSIVO
     private CategoryResponseDto toResponse(CategoryEntity entity) {
+        // INSTANCIAR LA RESPUESTA
         CategoryResponseDto dto = new CategoryResponseDto();
-
+        // AL OBJETO DTO AÑADIR EL ID, NOMBRE, Y DESCRIPCION
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
-
+        // DEVOLVER EL DTO CARGADO CON LOS OBJETOS DE RESPUESTA
         return dto;
     }
 }

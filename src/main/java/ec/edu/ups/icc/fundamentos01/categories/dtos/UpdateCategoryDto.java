@@ -17,10 +17,4 @@ public class UpdateCategoryDto {
 
     @Size(max = 500, message = "La descripción no debe superar los 500 caracteres")
     private String description;
-
-    // Constructor vacío
-
-    // Constructor lleno
-
-    // Getters y setters
 }

@@ -54,6 +54,8 @@ public class ProductControllers {
         return productService.findByUserId(userId);
     }
 
+
+
     @GetMapping("/category/{categoryId}")
     public List<ProductResponseDto> findByCategoryId(@PathVariable Long categoryId) {
         return productService.findByCategoryId(categoryId);

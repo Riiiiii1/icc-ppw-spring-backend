@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +24,8 @@ public class ProductResponseDto {
 
     private UserResponseDto owner;
 
-    private CategoryResponseDto category;
+    //private CategoryResponseDto category;
+    private List<CategoryResponseDto> categories;
 
     private LocalDateTime createdAt;
 

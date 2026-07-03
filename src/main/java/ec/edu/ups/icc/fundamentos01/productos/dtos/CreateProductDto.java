@@ -1,13 +1,12 @@
 package ec.edu.ups.icc.fundamentos01.productos.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -29,8 +28,8 @@ public class CreateProductDto {
     @NotNull(message = "El ID del usuario es obligatorio")
     private Long userId;
 
-    @NotNull(message = "El ID de la categoría es obligatorio")
-    private Long categoryId;
+    @NotEmpty(message = "Añada al menos una categoria para el producto")
+    private Set<Long> categoryIds;
 
 
 }

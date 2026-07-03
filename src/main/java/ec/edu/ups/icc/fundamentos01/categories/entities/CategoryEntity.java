@@ -1,12 +1,14 @@
 package ec.edu.ups.icc.fundamentos01.categories.entities;
 
 import ec.edu.ups.icc.fundamentos01.core.entities.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import ec.edu.ups.icc.fundamentos01.productos.entities.ProductEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "categories")
@@ -20,4 +22,7 @@ public class CategoryEntity extends BaseEntity {
 
     @Column(length = 500)
     private String description;
+
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    private Set<ProductEntity> products = new HashSet<>();
 }

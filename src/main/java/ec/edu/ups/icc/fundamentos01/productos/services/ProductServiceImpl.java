@@ -15,7 +15,9 @@ import ec.edu.ups.icc.fundamentos01.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -59,23 +61,16 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("User not found");
         }
 
-        CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("Category not found"));
+        Set<CategoryEntity> categories = validateAndGetCategories(dto.getCategoryIds());
 
-        if (category.isDeleted()) {
-            throw new NotFoundException("Category not found");
-        }
 
-        if (productRepository.findByNameIgnoreCaseAndDeletedFalse(dto.getName()).isPresent()) {
-            throw new ConflictException("Product name already registered");
-        }
 
         ProductEntity entity = new ProductEntity();
         entity.setName(dto.getName());
         entity.setPrice(dto.getPrice());
         entity.setStock(dto.getStock());
         entity.setOwner(owner);
-        entity.setCategory(category);
+        entity.setCategories(categories);
 
         ProductEntity savedEntity = productRepository.save(entity);
 
@@ -92,17 +87,14 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product not found");
         }
 
-        CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("Category not found"));
+        Set<CategoryEntity> categories = validateAndGetCategories(dto.getCategoryIds());
 
-        if (category.isDeleted()) {
-            throw new NotFoundException("Category not found");
-        }
+
 
         entity.setName(dto.getName());
         entity.setPrice(dto.getPrice());
         entity.setStock(dto.getStock());
-        entity.setCategory(category);
+        entity.setCategories(categories);
 
         ProductEntity savedEntity = productRepository.save(entity);
 
@@ -127,15 +119,9 @@ public class ProductServiceImpl implements ProductService {
             entity.setStock(dto.getStock());
         }
 
-        if (dto.getCategoryId() != null) {
-            CategoryEntity category = categoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> new NotFoundException("Category not found"));
-
-            if (category.isDeleted()) {
-                throw new NotFoundException("Category not found");
-            }
-
-            entity.setCategory(category);
+        if (dto.getCategoryIds() != null) {
+            Set<CategoryEntity> categories = validateAndGetCategories(dto.getCategoryIds());
+            entity.setCategories(categories);
         }
 
         ProductEntity savedEntity = productRepository.save(entity);
@@ -156,32 +142,12 @@ public class ProductServiceImpl implements ProductService {
         entity.setDeleted(true);
         productRepository.save(entity);
     }
-
     @Override
-    public List<ProductResponseDto> findByUserId(Long userId) {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) {
-            throw new NotFoundException("User not found");
-        }
-
-        return productRepository.findByOwner_IdAndDeletedFalse(userId)
-                .stream()
-                .map(ProductMapper::toModelFromEntity)
-                .map(ProductMapper::toResponse)
-                .toList();
+    public void deleteAll() {
+        
+            productRepository.deleteAll();
     }
 
-    @Override
-    public List<ProductResponseDto> findByCategoryId(Long categoryId) {
-        if (!categoryRepository.existsByIdAndDeletedFalse(categoryId)) {
-            throw new NotFoundException("Category not found");
-        }
-
-        return productRepository.findByCategory_IdAndDeletedFalse(categoryId)
-                .stream()
-                .map(ProductMapper::toModelFromEntity)
-                .map(ProductMapper::toResponse)
-                .toList();
-    }
 
 
     @Override
@@ -235,6 +201,9 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+
+
+    // HELPERS PARA METODOS DE FILTOS
     private void validateFilters(ProductFilterByCategoryDto filters) {
 
         if (filters == null) {
@@ -275,6 +244,30 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return name.trim();
+    }
+
+    // HELPER PARA CREATE, UPDATE , PARTIAL Y DEMAS
+
+    private Set<CategoryEntity> validateAndGetCategories(Set<Long> categoryIds) {
+
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            throw new BadRequestException("Debe seleccionar al menos una categoría");
+        }
+
+        Set<CategoryEntity> categories = new HashSet<>();
+
+        for (Long categoryId : categoryIds) {
+            CategoryEntity category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
+
+            if (category.isDeleted()) {
+                throw new NotFoundException("Category not found");
+            }
+
+            categories.add(category);
+        }
+
+        return categories;
     }
 
 }

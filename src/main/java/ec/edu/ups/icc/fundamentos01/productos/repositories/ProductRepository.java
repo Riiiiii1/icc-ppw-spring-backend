@@ -20,10 +20,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     List<ProductEntity> findByOwner_IdAndDeletedFalse(Long ownerId);
 
-    List<ProductEntity> findByCategory_IdAndDeletedFalse(Long categoryId);
-
-    List<ProductEntity> findByCategory_NameIgnoreCaseAndDeletedFalse(String categoryName);
-
     // QUERYS PERSONALIZADAS CON SQL DIRECTO
     /*
      * Busca productos activos de un usuario aplicando filtros opcionales.
@@ -31,23 +27,23 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
      * Si un filtro llega como null, no se aplica.
      */
     @Query("""
-            SELECT p
-            FROM ProductEntity p
-            WHERE p.deleted = false
-              AND p.owner.id = :userId
-              AND p.owner.deleted = false
-              AND (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%')))
-              AND (:minPrice IS NULL OR p.price >= :minPrice)
-              AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-              AND (:categoryId IS NULL OR p.category.id = :categoryId)
-              AND (:categoryId IS NULL OR p.category.deleted = false)
-            """)
+        SELECT DISTINCT p
+        FROM ProductEntity p
+        LEFT JOIN p.categories c
+        WHERE p.deleted = false
+          AND p.owner.id = :userId
+          AND p.owner.deleted = false
+          AND (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%')))
+          AND (:minPrice IS NULL OR p.price >= :minPrice)
+          AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+          AND (:categoryId IS NULL OR (c.id = :categoryId AND c.deleted = false))
+        """)
     List<ProductEntity> findByOwnerIdWithFilters(
-            @Param("userId") Long userId,
-            @Param("name") String name,
-            @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice,
-            @Param("categoryId") Long categoryId
+                @Param("userId") Long userId,
+                @Param("name") String name,
+                @Param("minPrice") Double minPrice,
+                @Param("maxPrice") Double maxPrice,
+                @Param("categoryId") Long categoryId
     );
 
     /*
@@ -56,16 +52,17 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
      * Si un filtro llega como null, no se aplica.
      */
     @Query("""
-            SELECT p
+            SELECT DISTINCT p
             FROM ProductEntity p
+            JOIN p.categories c
             WHERE p.deleted = false
-              AND p.category.id = :categoryId
-              AND p.category.deleted = false
+              AND c.id = :categoryId
+              AND c.deleted = false
+              AND p.owner.deleted = false
               AND (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%')))
               AND (:minPrice IS NULL OR p.price >= :minPrice)
               AND (:maxPrice IS NULL OR p.price <= :maxPrice)
               AND (:userId IS NULL OR p.owner.id = :userId)
-              AND (:userId IS NULL OR p.owner.deleted = false)
             """)
     List<ProductEntity> findByCategoryIdWithFilters(
             @Param("categoryId") Long categoryId,

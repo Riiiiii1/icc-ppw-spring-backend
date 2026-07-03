@@ -18,9 +18,6 @@ public interface ProductService {
 
     void delete(Long id);
 
-    List<ProductResponseDto> findByUserId(Long userId);
-
-    List<ProductResponseDto> findByCategoryId(Long categoryId);
 
     List<ProductResponseDto> findByUserIdWithFilters(
             Long userId,
@@ -30,4 +27,6 @@ public interface ProductService {
             Long categoryId,
             ProductFilterByCategoryDto filters
     );
+
+    void deleteAll();
 }

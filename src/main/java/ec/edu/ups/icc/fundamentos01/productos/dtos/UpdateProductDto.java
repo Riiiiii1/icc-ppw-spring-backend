@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +24,8 @@ public class UpdateProductDto {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
-    @NotNull(message = "El ID de la categoría es obligatorio")
-    private Long categoryId;
+    @NotEmpty(message = "Debe seleccionar al menos una categoría")
+    private Set<Long> categoryIds;
 
 
 

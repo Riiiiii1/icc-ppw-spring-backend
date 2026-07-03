@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 /*
  * Entidad JPA del recurso products.
  *
@@ -34,7 +38,23 @@ public class ProductEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity owner;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+/*    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
+*/
+
+    /*
+     * Relación muchos a muchos entre productos y categorías.
+     *
+     * Un producto puede pertenecer a varias categorías.
+     * Una categoría puede tener varios productos.
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    //TreeSet : Sirve para que se ordenen los datos
+    private Set<CategoryEntity> categories = new HashSet<>();
 }

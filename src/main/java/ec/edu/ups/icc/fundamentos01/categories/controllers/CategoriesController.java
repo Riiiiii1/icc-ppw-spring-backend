@@ -50,11 +50,11 @@ public class CategoriesController {
     }
 
 
-    @GetMapping("/{id}/products")
+/*    @GetMapping("/{id}/products")
     public List<ProductResponseDto> findProductsByCategory(
             @PathVariable Long id,
             @Valid @ModelAttribute ProductFilterByCategoryDto filters
     ) {
         return productService.findByCategoryIdWithFilters(id, filters);
-    }
+    }*/
 }

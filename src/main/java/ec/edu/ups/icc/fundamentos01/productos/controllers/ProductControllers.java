@@ -49,15 +49,9 @@ public class ProductControllers {
         productService.delete(id);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<ProductResponseDto> findByUserId(@PathVariable Long userId) {
-        return productService.findByUserId(userId);
-    }
+    @DeleteMapping("/clear")
+    public void deleteAll(){
+        productService.deleteAll();
 
-
-
-    @GetMapping("/category/{categoryId}")
-    public List<ProductResponseDto> findByCategoryId(@PathVariable Long categoryId) {
-        return productService.findByCategoryId(categoryId);
     }
 }

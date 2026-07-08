@@ -1,7 +1,9 @@
 package ec.edu.ups.icc.fundamentos01.productos.services;
 
+import ec.edu.ups.icc.fundamentos01.categories.dtos.CategoryResponseDto;
 import ec.edu.ups.icc.fundamentos01.categories.entities.CategoryEntity;
 import ec.edu.ups.icc.fundamentos01.categories.repositories.CategoryRepository;
+import ec.edu.ups.icc.fundamentos01.core.dto.PaginationDto;
 import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.BadRequestException;
 import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.ConflictException;
 import ec.edu.ups.icc.fundamentos01.core.exceptions.domain.NotFoundException;
@@ -13,7 +15,9 @@ import ec.edu.ups.icc.fundamentos01.productos.repositories.ProductRepository;
 import ec.edu.ups.icc.fundamentos01.users.entities.UserEntity;
 import ec.edu.ups.icc.fundamentos01.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -269,5 +273,139 @@ public class ProductServiceImpl implements ProductService {
 
         return categories;
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> findAllPage(PaginationDto pagination) {
 
+        Pageable pageable = createPageable(pagination);
+
+        return productRepository.findActivePage(pageable)
+                .map(ProductMapper::toModelFromEntity).map(ProductMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ProductResponseDto> findAllSlice(PaginationDto pagination) {
+
+        Pageable pageable = createPageable(pagination);
+
+        return productRepository.findActiveSlice(pageable)
+                .map(ProductMapper::toModelFromEntity).map(ProductMapper::toResponse);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> findByCategoryIdWithFiltersPage(
+            Long categoryId,
+            ProductFilterByCategoryDto filters,
+            PaginationDto pagination
+    ) {
+        if (!categoryRepository.existsByIdAndDeletedFalse(categoryId)) {
+            throw new NotFoundException("Category not found");
+        }
+
+        validateFilters(filters);
+
+        String name = normalizeName(filters.getName());
+
+        Pageable pageable = createPageable(pagination);
+
+        return productRepository.findByCategoryIdWithFiltersPage(
+                        categoryId,
+                        name,
+                        filters.getMinPrice(),
+                        filters.getMaxPrice(),
+                        filters.getUserId(),
+                        pageable
+                )
+                .map(ProductMapper::toModelFromEntity)
+                .map(ProductMapper::toResponse);
+    }
+
+    /*
+     * Retorna productos activos de una categoría usando Slice.
+     *
+     * No calcula totalElements ni totalPages.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<ProductResponseDto> findByCategoryIdWithFiltersSlice(
+            Long categoryId,
+            ProductFilterByCategoryDto filters,
+            PaginationDto pagination
+    ) {
+        if (!categoryRepository.existsByIdAndDeletedFalse(categoryId)) {
+            throw new NotFoundException("Category not found");
+        }
+
+        validateFilters(filters);
+
+        String name = normalizeName(filters.getName());
+
+        Pageable pageable = createPageable(pagination);
+
+        return productRepository.findByCategoryIdWithFiltersSlice(
+                        categoryId,
+                        name,
+                        filters.getMinPrice(),
+                        filters.getMaxPrice(),
+                        filters.getUserId(),
+                        pageable
+                )
+                .map(ProductMapper::toModelFromEntity)
+                .map(ProductMapper::toResponse);
+    }
+
+    private Pageable createPageable(PaginationDto pagination) {
+
+        String sortBy = normalizeSortBy(pagination.getSortBy());
+
+        Sort.Direction direction = normalizeDirection(pagination.getDirection());
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        return PageRequest.of(
+                pagination.getPage(),
+                pagination.getSize(),
+                sort
+        );
+    }
+
+    private String normalizeSortBy(String sortBy) {
+
+        if (sortBy == null || sortBy.isBlank()) {
+            return "id";
+        }
+
+        Set<String> allowedFields = Set.of(
+                "id",
+                "name",
+                "price",
+                "stock",
+                "createdAt",
+                "updatedAt"
+        );
+
+        if (!allowedFields.contains(sortBy)) {
+            throw new BadRequestException("Campo de ordenamiento no permitido: " + sortBy);
+        }
+
+        return sortBy;
+    }
+
+    private Sort.Direction normalizeDirection(String direction) {
+
+        if (direction == null || direction.isBlank()) {
+            return Sort.Direction.ASC;
+        }
+
+        if (direction.equalsIgnoreCase("asc")) {
+            return Sort.Direction.ASC;
+        }
+
+        if (direction.equalsIgnoreCase("desc")) {
+            return Sort.Direction.DESC;
+        }
+
+        throw new BadRequestException("Dirección de ordenamiento no válida: " + direction);
+    }
 }

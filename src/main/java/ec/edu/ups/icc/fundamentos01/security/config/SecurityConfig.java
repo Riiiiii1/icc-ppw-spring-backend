@@ -57,40 +57,32 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Deshabilitar CSRF (no necesario para APIs REST con JWT)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Configurar manejo de excepciones de autenticación
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(unauthorizedHandler)
                 )
-
-                // Configurar sesiones como stateless (no usar sesiones HTTP)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
-                // Configurar autorización de requests
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos (sin autenticación)
+                        // Endpoints públicos
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/status/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
 
-                        // Todos los demás endpoints requieren autenticación
+                        // Endpoints por rol
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/moderator/**").hasAnyRole("ADMIN", "MODERATOR")
+
+                        // Resto requiere autenticación
                         .anyRequest().authenticated()
-                );
-
-        // Agregar proveedor de autenticación
-        http.authenticationProvider(authenticationProvider());
-
-        // Agregar filtro JWT antes del filtro de autenticación estándar
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+
 }

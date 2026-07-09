@@ -10,6 +10,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +26,10 @@ public class ProductControllers {
 
 
     @GetMapping
-    public List<ProductResponseDto> findAll() {
-        return productService.findAll();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProductResponseDto>> findAll() {
+        List<ProductResponseDto> products = productService.findAll();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
@@ -33,11 +38,13 @@ public class ProductControllers {
     }
 
     @PostMapping
-    public ProductResponseDto create(@Valid @RequestBody CreateProductDto dto) {
-        return productService.create(dto);
+    public ResponseEntity<ProductResponseDto> create(@Valid @RequestBody CreateProductDto dto) {
+        ProductResponseDto created = productService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public ProductResponseDto update(@PathVariable Long id, @Valid @RequestBody UpdateProductDto dto) {
         return productService.update(id, dto);
     }
@@ -47,12 +54,15 @@ public class ProductControllers {
         return productService.partialUpdate(id, dto);
     }
 
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
     }
 
     @DeleteMapping("/clear")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAll(){
         productService.deleteAll();
 
@@ -71,5 +81,8 @@ public class ProductControllers {
     ) {
         return productService.findAllSlice(pagination);
     }
+
+
+
 
 }

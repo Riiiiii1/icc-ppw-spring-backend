@@ -13,27 +13,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth") // Prefijo para todos los endpoints de autenticación
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
-    private AuthService authService; // Servicio de lógica de autenticación
+    private AuthService authService;
 
 
-    /**
-     * Login - Endpoint público (configurado en SecurityConfig)
-     * POST /auth/login
-     */
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
-        // @Valid valida anotaciones en LoginRequestDto (email, password requeridos)
+
         AuthResponseDto response = authService.login(loginRequest);
         return ResponseEntity.ok(response); // 200 OK con JWT
     }
 
-    /**
-     * Registro - Endpoint público (configurado en SecurityConfig)
-     * POST /auth/register
-     */
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
         // @Valid valida anotaciones en RegisterRequestDto

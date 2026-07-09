@@ -69,15 +69,7 @@ public class UserServiceImpl implements UserService {
 
         return UserMapper.toResponse(model);
     }
-    /*
-     * Crea un nuevo usuario.
-     *
-     * Convierte DTO a Model.
-     * Convierte Model a Entity.
-     * Guarda Entity en PostgreSQL.
-     * Convierte Entity guardada a Model.
-     * Devuelve Response DTO.
-     */
+
     @Override
     public UserResponseDto create(CreateUserDto dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -96,14 +88,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponse(savedModel);
     }
 
-    /*
-     * Actualiza completamente un usuario.
-     *
-     * Busca la entidad existente.
-     * Actualiza los campos editables.
-     * Guarda los cambios.
-     * Devuelve DTO de respuesta.
-     */
+
     @Override
     public UserResponseDto update(Long id, UpdateUserDto dto) {
 

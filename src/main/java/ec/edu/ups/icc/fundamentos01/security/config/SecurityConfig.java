@@ -4,6 +4,7 @@ import ec.edu.ups.icc.fundamentos01.security.filters.JwtAuthenticationFilter;
 import ec.edu.ups.icc.fundamentos01.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -68,15 +69,13 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/status/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
-                        // Endpoints por rol
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/moderator/**").hasAnyRole("ADMIN", "MODERATOR")
 
-                        // Resto requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

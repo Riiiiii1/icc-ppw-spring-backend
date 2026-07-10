@@ -27,13 +27,7 @@ public class UserServiceImpl implements UserService {
     private  UserRepository userRepository;
 
 
-    /*
-     * Retorna todos los usuarios almacenados en PostgreSQL.
-     *
-     * El repositorio devuelve entidades.
-     * El mapper convierte entidades a modelos.
-     * Luego convierte modelos a DTOs de respuesta.
-     */
+
     @Override
     public List<UserResponseDto> findAll() {
 
@@ -44,17 +38,7 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
-    /*
-     * Busca un usuario por id.
-     *
-     * Si no existe, lanza un error simple.
-     * El manejo formal de errores se implementará después.
-     */
-    /*
-     * Busca un usuario activo por id.
-     *
-     * Si no existe o está eliminado, lanza NotFoundException.
-     */
+
     @Override
     public UserResponseDto findOne(Long id) {
 

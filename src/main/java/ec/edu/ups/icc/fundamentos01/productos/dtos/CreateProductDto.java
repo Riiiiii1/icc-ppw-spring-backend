@@ -25,8 +25,6 @@ public class CreateProductDto {
     @PositiveOrZero(message = "El stock no puede ser negativo")
     private Integer stock;
 
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Long userId;
 
     @NotEmpty(message = "Añada al menos una categoria para el producto")
     private Set<Long> categoryIds;

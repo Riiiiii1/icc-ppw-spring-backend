@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     // Verificar si email ya está registrado (usado en registro)
     boolean existsByEmail(String email);
+
+
 }

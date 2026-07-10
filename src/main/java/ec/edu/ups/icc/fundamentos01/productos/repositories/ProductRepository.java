@@ -91,12 +91,12 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Page<ProductEntity> findActivePage(Pageable pageable);
 
     @Query("""
-            SELECT p
-            FROM ProductEntity p
-            WHERE p.deleted = false
-            """)
-    Slice<ProductEntity> findActiveSlice(Pageable pageable);
-
+        SELECT p
+        FROM ProductEntity p
+        WHERE p.deleted = false
+        AND p.owner.id = :ownerId
+        """)
+    Slice<ProductEntity> findActiveSliceByOwner(@Param("ownerId") Long ownerId, Pageable pageable);
 
     @Query(
             value = """

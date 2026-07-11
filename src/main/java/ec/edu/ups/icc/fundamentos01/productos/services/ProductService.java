@@ -12,8 +12,7 @@ public interface ProductService {
 
     List<ProductResponseDto> findAll();
 
-    ProductResponseDto findOne(Long id);
-
+    ProductResponseDto findOne(Long id, UserDetailsImpl currentUser);
     //ProductResponseDto create(CreateProductDto dto);
 
 

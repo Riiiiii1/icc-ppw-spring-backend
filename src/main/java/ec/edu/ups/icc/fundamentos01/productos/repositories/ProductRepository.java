@@ -150,4 +150,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             @Param("userId") Long userId,
             Pageable pageable
     );
+    boolean existsByNameAndOwnerIdAndDeletedFalse(String name, Long ownerId);
+    boolean existsByNameAndOwnerIdAndIdNotAndDeletedFalse(String name, Long ownerId, Long id);
 }

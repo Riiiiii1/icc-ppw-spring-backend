@@ -35,10 +35,12 @@ public class ProductControllers {
     }
 
     @GetMapping("/{id}")
-    public ProductResponseDto findOne(@PathVariable Long id) {
-        return productService.findOne(id);
+    public ProductResponseDto findOne(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl currentUser
+    ) {
+        return productService.findOne(id, currentUser);
     }
-
 /*
     @PostMapping
     public ResponseEntity<ProductResponseDto> create(@Valid @RequestBody CreateProductDto dto) {
@@ -97,7 +99,7 @@ public class ProductControllers {
     }
 
     @GetMapping("/slice")
-    public Slice<ProductResponseDto> findAllSlice(
+    public Slice<ProductResponseDto>  findAllSlice(
             @Valid @ModelAttribute PaginationDto pagination,
             @AuthenticationPrincipal UserDetailsImpl currentUser
     ) {

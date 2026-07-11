@@ -44,11 +44,10 @@ public class SecurityDataInitializer implements CommandLineRunner {
     private void createAdminUserIfNotExists() {
         String adminEmail = "admin@ups.edu.ec";
 
-        // Si ya existía un registro erróneo o viejo con ese correo, lo limpiamos para no chocar
-        userRepository.findByEmail(adminEmail).ifPresent(user -> {
-            userRepository.delete(user);
-            userRepository.flush(); // Fuerza la eliminación inmediata en la BD
-        });
+        // Si ya existe el admin, no lo tocamos (puede tener productos u otras relaciones)
+        if (userRepository.findByEmail(adminEmail).isPresent()) {
+            return;
+        }
 
         // Buscamos el rol de administrador recién creado/verificado
         RoleEntity adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
@@ -58,7 +57,7 @@ public class SecurityDataInitializer implements CommandLineRunner {
         UserEntity admin = new UserEntity();
         admin.setName("Admin UPS");
         admin.setEmail(adminEmail);
-        admin.setPasswordHash(passwordEncoder.encode("admin123")); // Hash real compatible con tu login
+        admin.setPasswordHash(passwordEncoder.encode("admin123"));
         admin.getRoles().add(adminRole);
 
         userRepository.save(admin);

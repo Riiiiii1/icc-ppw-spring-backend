@@ -49,13 +49,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDto findOne(Long id) {
+    public ProductResponseDto findOne(Long id, UserDetailsImpl currentUser) {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
         if (entity.isDeleted()) {
             throw new NotFoundException("Product not found");
         }
+
+        validateOwnership(entity, currentUser);
 
         ProductModel model = ProductMapper.toModelFromEntity(entity);
         return ProductMapper.toResponse(model);
@@ -65,14 +67,15 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto create(CreateProductDto dto, UserDetailsImpl currentUser) {
         UserEntity owner = findCurrentUserEntity(currentUser);
 
-
         if (owner.isDeleted()) {
             throw new NotFoundException("User not found");
         }
 
+        if (productRepository.existsByNameAndOwnerIdAndDeletedFalse(dto.getName(), owner.getId())) {
+            throw new ConflictException("Ya tienes un producto registrado con ese nombre");
+        }
+
         Set<CategoryEntity> categories = validateAndGetCategories(dto.getCategoryIds());
-
-
 
         ProductEntity entity = new ProductEntity();
         entity.setName(dto.getName());
@@ -95,9 +98,12 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("Product not found");
         }
 
+        if (productRepository.existsByNameAndOwnerIdAndIdNotAndDeletedFalse(
+                dto.getName(), entity.getOwner().getId(), entity.getId())) {
+            throw new ConflictException("Ya tienes un producto registrado con ese nombre");
+        }
+
         Set<CategoryEntity> categories = validateAndGetCategories(dto.getCategoryIds());
-
-
 
         entity.setName(dto.getName());
         entity.setPrice(dto.getPrice());
@@ -109,7 +115,6 @@ public class ProductServiceImpl implements ProductService {
         ProductModel model = ProductMapper.toModelFromEntity(savedEntity);
         return ProductMapper.toResponse(model);
     }
-
     @Override
     public ProductResponseDto partialUpdate(Long id, PartialUpdateProductDto dto, UserDetailsImpl currentUser) {
         ProductEntity entity = findActiveProductOrThrow(id);
@@ -118,6 +123,10 @@ public class ProductServiceImpl implements ProductService {
         validateOwnership(entity, currentUser);
 
         if (dto.getName() != null) {
+            if (productRepository.existsByNameAndOwnerIdAndIdNotAndDeletedFalse(
+                    dto.getName(), entity.getOwner().getId(), entity.getId())) {
+                throw new ConflictException("Ya tienes un producto registrado con ese nombre");
+            }
             entity.setName(dto.getName());
         }
 
@@ -138,7 +147,6 @@ public class ProductServiceImpl implements ProductService {
 
         ProductModel model = ProductMapper.toModelFromEntity(savedEntity);
         return ProductMapper.toResponse(model);
-
     }
 
     @Override

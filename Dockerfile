@@ -1,4 +1,4 @@
-# ETAPA 1: BUILD
+
 FROM gradle:8.10-jdk17 AS builder
 WORKDIR /build
 COPY build.gradle settings.gradle* ./
@@ -8,7 +8,7 @@ RUN chmod +x gradlew
 COPY src ./src
 RUN ./gradlew build -x test --no-daemon
 
-# ETAPA 2: RUNTIME
+
 FROM eclipse-temurin:17-jre-alpine
 RUN addgroup -S spring && adduser -S spring -G spring
 WORKDIR /app

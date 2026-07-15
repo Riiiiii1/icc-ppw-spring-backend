@@ -73,6 +73,9 @@ public class SecurityConfig {
                         .requestMatchers("/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
+                        .requestMatchers("/actuator/health").permitAll()   // ← NUEVO: health público
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")  // ← NUEVO: resto de actuator solo ADMIN
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/moderator/**").hasAnyRole("ADMIN", "MODERATOR")
 

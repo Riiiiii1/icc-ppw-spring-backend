@@ -39,7 +39,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    /**
+     * DaoAuthenticationProvider: Proveedor de autenticación que conecta:
+     * - UserDetailsService: Carga información del usuario desde BD
+     * - PasswordEncoder: Valida la contraseña hasheada
+     *
+     * Spring Security usa este provider para autenticar credenciales.
+     * El constructor acepta directamente el UserDetailsService en Spring Boot 3.x/4.x
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
@@ -62,7 +69,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 

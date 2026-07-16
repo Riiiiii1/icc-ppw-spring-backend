@@ -26,11 +26,9 @@ public class SecurityDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Asegura que los roles existan primero
+
         createRoleIfNotExists(RoleName.ROLE_USER, "Usuario estándar del sistema");
         createRoleIfNotExists(RoleName.ROLE_ADMIN, "Administrador del sistema");
-
-        // Crea el administrador usando persistencia nativa de JPA
         createAdminUserIfNotExists();
     }
 
@@ -44,16 +42,14 @@ public class SecurityDataInitializer implements CommandLineRunner {
     private void createAdminUserIfNotExists() {
         String adminEmail = "admin@ups.edu.ec";
 
-        // Si ya existe el admin, no lo tocamos (puede tener productos u otras relaciones)
+
         if (userRepository.findByEmail(adminEmail).isPresent()) {
             return;
         }
 
-        // Buscamos el rol de administrador recién creado/verificado
         RoleEntity adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Error: Rol ADMIN no encontrado"));
 
-        // Construimos el objeto dejando que Hibernate maneje la BaseEntity
         UserEntity admin = new UserEntity();
         admin.setName("Admin UPS");
         admin.setEmail(adminEmail);

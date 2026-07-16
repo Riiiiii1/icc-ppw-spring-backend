@@ -32,8 +32,8 @@ public class OpenApiConfig {
                 );
 
         Server localServer = new Server()
-                .url("/api")
-                .description("Servidor local");
+                .url("/")
+                .description("Servidor RENDER EN LA NUBE");
 
         SecurityScheme bearerScheme = new SecurityScheme()
                 .name(SECURITY_SCHEME_NAME)

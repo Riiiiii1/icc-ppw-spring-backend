@@ -30,11 +30,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // 201 Created con JWT
     }
 
-    /*
-     * Refresh.
-     *
-     * Recibe un refresh token válido y devuelve nuevos tokens.
-     */
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponseDto> refresh(
             @Valid @RequestBody RefreshTokenRequestDto request
@@ -43,11 +38,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    /*
-     * Logout.
-     *
-     * Revoca el refresh token recibido.
-     */
+
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(

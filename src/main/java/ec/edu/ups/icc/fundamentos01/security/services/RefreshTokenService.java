@@ -32,11 +32,6 @@ public class RefreshTokenService {
         this.jwtProperties = jwtProperties;
     }
 
-    /*
-     * Crea un refresh token para un usuario.
-     *
-     * El token se firma como JWT y también se guarda en base de datos.
-     */
     @Transactional
     public RefreshTokenEntity createRefreshToken(
             UserEntity user,
@@ -56,17 +51,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    /*
-     * Valida un refresh token recibido desde el cliente.
-     *
-     * Validaciones:
-     * 1. El JWT debe tener firma válida.
-     * 2. El JWT debe ser de tipo refresh.
-     * 3. El token debe existir en base de datos.
-     * 4. El token no debe estar revocado.
-     * 5. El token no debe estar expirado.
-     * 6. El usuario dueño del token debe seguir activo.
-     */
+
     @Transactional
     public RefreshTokenEntity validateAndGetActiveToken(String token) {
 
@@ -92,28 +77,13 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
-    /*
-     * Revoca un refresh token específico.
-     *
-     * Se usa en:
-     * - refresh, para rotar tokens
-     * - logout, para cerrar sesión
-     */
     @Transactional
     public void revoke(RefreshTokenEntity refreshToken) {
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
     }
 
-    /*
-     * Revoca todos los refresh tokens activos de un usuario.
-     *
-     * En esta práctica se usa durante login para dejar
-     * una sola sesión activa por usuario.
-     *
-     * Si se quisiera permitir varias sesiones o varios dispositivos,
-     * se podría no llamar a este método durante login.
-     */
+
     @Transactional
     public void revokeAllByUser(UserEntity user) {
         List<RefreshTokenEntity> tokens = refreshTokenRepository

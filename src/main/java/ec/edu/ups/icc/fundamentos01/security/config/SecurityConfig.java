@@ -73,11 +73,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
+                        // --- CORRIGE ESTAS LÍNEAS ---
                         .requestMatchers(
-                                "/api/swagger-ui/**",
-                                "/api/v3/api-docs/**",
-                                "/api/swagger-ui.html"
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
                         ).permitAll()
+                        // ----------------------------
 
                         .requestMatchers("/api/actuator/health").permitAll()
                         .requestMatchers("/api/actuator/**").hasRole("ADMIN")

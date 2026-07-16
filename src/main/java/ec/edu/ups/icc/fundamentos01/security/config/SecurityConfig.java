@@ -73,8 +73,15 @@ public class SecurityConfig {
                         .requestMatchers("/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
-                        .requestMatchers("/actuator/health").permitAll()   // ← NUEVO: health público
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")  // ← NUEVO: resto de actuator solo ADMIN
+                        // Swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/moderator/**").hasAnyRole("ADMIN", "MODERATOR")

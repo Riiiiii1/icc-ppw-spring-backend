@@ -21,16 +21,19 @@ public class AuthResponseDto {
 
     private Set<String> roles;
 
+    private String refreshToken;
 
 
     public AuthResponseDto(
             String token,
+            String refreshToken,
             Long userId,
             String name,
             String email,
             Set<String> roles
     ) {
         this.token = token;
+        this.refreshToken = refreshToken;
         this.userId = userId;
         this.name = name;
         this.email = email;

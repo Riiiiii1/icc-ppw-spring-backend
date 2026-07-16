@@ -39,14 +39,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * DaoAuthenticationProvider: Proveedor de autenticación que conecta:
-     * - UserDetailsService: Carga información del usuario desde BD
-     * - PasswordEncoder: Valida la contraseña hasheada
-     *
-     * Spring Security usa este provider para autenticar credenciales.
-     * El constructor acepta directamente el UserDetailsService en Spring Boot 3.x/4.x
-     */
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
@@ -69,19 +62,18 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/status/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
-                        // Swagger
                         .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html"
+                                "/api/swagger-ui/**",
+                                "/api/v3/api-docs/**",
+                                "/api/swagger-ui.html"
                         ).permitAll()
 
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        .requestMatchers("/api/actuator/health").permitAll()
+                        .requestMatchers("/api/actuator/**").hasRole("ADMIN")
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/moderator/**").hasAnyRole("ADMIN", "MODERATOR")

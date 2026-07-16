@@ -62,10 +62,7 @@ public class JwtUtil {
         );
     }
 
-    /*
-     * Genera un refresh token.
-     * Solo debe usarse en POST /api/auth/refresh
-     */
+
     public String generateRefreshToken(UserDetailsImpl userDetails) {
         return buildToken(
                 userDetails,

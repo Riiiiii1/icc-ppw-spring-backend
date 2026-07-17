@@ -1,4 +1,3 @@
-
 FROM gradle:8.10-jdk17 AS builder
 WORKDIR /build
 COPY build.gradle settings.gradle* ./
@@ -10,11 +9,20 @@ RUN ./gradlew build -x test --no-daemon
 
 
 FROM eclipse-temurin:17-jre-alpine
-RUN addgroup -S spring && adduser -S spring -G spring
+
+RUN apk add --no-cache curl \
+    && addgroup -S spring && adduser -S spring -G spring
+
 WORKDIR /app
+
 COPY --from=builder /build/build/libs/fundamentos01-api.jar app.jar
 RUN chown spring:spring app.jar
+
 USER spring:spring
+
 EXPOSE 8080
-ENV SPRING_PROFILES_ACTIVE=prod
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl --fail --silent http://localhost:8080/api/actuator/health || exit 1
+
 ENTRYPOINT ["java", "-Xms256m", "-Xmx512m", "-jar", "app.jar"]

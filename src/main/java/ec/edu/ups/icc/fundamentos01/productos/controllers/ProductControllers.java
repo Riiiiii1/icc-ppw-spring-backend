@@ -7,6 +7,13 @@ import ec.edu.ups.icc.fundamentos01.productos.dtos.ProductResponseDto;
 import ec.edu.ups.icc.fundamentos01.productos.dtos.UpdateProductDto;
 import ec.edu.ups.icc.fundamentos01.productos.services.ProductService;
 import ec.edu.ups.icc.fundamentos01.security.services.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,15 +25,21 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/products")
+@Tag(name = "Products", description = "Gestión de productos: creación, consulta, actualización y eliminación")
+@SecurityRequirement(name = "bearerAuth")
+
 public class ProductControllers {
     @Autowired
     private  ProductService productService;
 
 
-
+    @Operation(summary = "Listar todos los productos", description = "Solo accesible para usuarios con rol ADMIN")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de productos obtenida correctamente"),
+            @ApiResponse(responseCode = "403", description = "No tiene permisos de administrador")
+    })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProductResponseDto>> findAll() {
@@ -48,6 +61,31 @@ public class ProductControllers {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 */
+    @Operation(
+            summary = "Crear un nuevo producto",
+            description = "Crea un producto asociado al usuario autenticado. " +
+                    "El usuario debe estar autenticado con un access token válido."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Producto creado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos inválidos en el cuerpo de la petición",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "No autenticado o token inválido/expirado",
+                    content = @Content
+            )
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponseDto create(

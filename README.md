@@ -217,3 +217,109 @@ Es el principio de que un recurso  pertenece a un usuario específico, y solo es
 Porque permitiría que cualquier usuario autenticado creara productos a nombre de otra persona, con solo cambiar el valor de userId en el body de la petición
 ## 7. ¿Cuál es la diferencia entre autorización por rol y autorización por ownership?
 La autorización por rol valida qué tipo de usuario es , sin importar a quién pertenece el recurso. La autorización por ownership valida si el usuario autenticado es el dueño específico del recurso que intenta modificar, sin importar su rol.
+
+-------------------------------------------------------------------------------------------------------------------------
+# PRÁCTICA 14 : Refresh Token 
+
+## 1. Evidencia del Endpoint POST /auth/login con refreshToken y roles (Desde Render)
+
+Como se puede ver en la imagen, al consumir https://icc-ppw-spring-backend.onrender.com/auth/login
+e insertar el Request Body, nos devuelve el token, el refreshToken y el rol que es ROLE_USER.
+![Evidencia Java Version](src/main/resources/assets/evidencia_refresh_token_1.png)
+
+## 2. Evidencia del Endpoint POST /auth/refresh con refreshToken (Desde Render)
+
+Como se puede ver en la imagen, al consumir https://icc-ppw-spring-backend.onrender.com/auth/refresh
+e insertar el Request Body con refreshToken nos devuelve el email asociado a ese token, su rol y el email. 
+![Evidencia Java Version](src/main/resources/assets/evidencia_refresh_token_2.png)
+
+## 3. Evidencia del Endpoint POST /auth/logout con refreshToken (Desde Render)
+
+Como se puede ver en la imagen, al consumir https://icc-ppw-spring-backend.onrender.com/auth/logout
+e insertar el Request Body con refreshTolen nos devuelve un NO CONTENT que corresponde a la salida de nuestro
+endpoint.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_logout.png)
+
+# 4. Evidencia del endpoint POST /auth/refresh despues del logout (Desde Render)
+
+Como se puede ver en la imagen, al consumir https://icc-ppw-spring-backend.onrender.com/auth/refresh
+con el mismo refresh token que utilizamos para el logout, nos devuelve un Bad Request, ya que es necesario
+volverse a loggear para obtener un token o refresh token valido.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_refresh_token_3.png)
+
+## 5.¿Cuál es la diferencia entre access token y refresh token?
+El access token es un token de corta duración que se utiliza para acceder a los recursos protegidos en cada petición, mientras que el refresh token es un token de larga duración que se usa únicamente para obtener un nuevo access token cuando el original ha expirado, sin necesidad de que el usuario vuelva a iniciar sesión.
+## 6. ¿Por qué el refresh token no debe usarse en Authorization: Bearer?
+Porque el refresh token solo sirve para obtener un nuevo acces token. No debe enviarse en Authorization Bearer porque si 
+sucede una violacion de seguridad por un atacante, el mismo puede mantener una sesion abierta por bastante tiempo.
+## 7. ¿Qué significa rotar un refresh token?
+Rotar un refresh token significa que, cada vez que se usa para obtener un nuevo access token, el servidor entrega un refresh token nuevo e invalida el anterior para mejorar la seguridad.
+
+
+# PRÁCTICA 15 : SWAGGER Y DOCUMENTACIÓN
+
+## 1. Evidencia de configuracion de Swagger en la nube (RENDER)
+Como se evidencia en la imagen, se ve la documentacion accesible desde cualquier parte solo accediendo a la url:
+https://icc-ppw-spring-backend.onrender.com/swagger-ui/index.html.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_swagger.png)
+
+## 2. Evidencia de REGISTER Y LOGIN desde Swagger en la nube (RENDER)
+Como se evidencia en la imagen, se ve el intento de insertar un nuevo usuario con las siguientes credenciales
+y ademas, usando el email y el password nos loggeamos, devolviendonos el token y el refresh token.
+
+## REGISTER DESDE SWAGGER
+![Evidencia Java Version](src/main/resources/assets/evidenca_register_desde_swagger.png)
+
+## LOGIN DESDE SWAGGER
+![Evidencia Java Version](src/main/resources/assets/evidencia_login_swagger.png)
+
+
+## 3. Evidencia de Autorización y Documentación para Productos (RENDER)
+En la primera imagen se muestra el ingreso del token del usuario en el bloque de Authorization.
+En la segunda imagen se revisa un poco de la documentacion que se muestra al crear un nuevo producto.
+
+
+## DOCUMENTACION PARA POST /api/products DESDE SWAGGER
+![Evidencia Java Version](src/main/resources/assets/evidencia_documentacion_post.png)
+
+## AUTORIZACION DESDE SWAGGER 
+![Evidencia Java Version](src/main/resources/assets/evidencia_auth.png)
+
+# PRÁCTICA 16 : DESPLEGAR EN UBUNTU SERVER
+
+
+## 1. Evidencia de contenedores de Docker en Ubuntu Server (docker ps)
+
+En Ubuntu Server con usuario system, se instalo nginx dentro de docker, con esta configuracion
+final deberia al ejecutar Docker ps, verse dos contenedores, uno para nginx y otro para el proyecto.
+
+Aqui se muestra la captura que evidencia los dos contenedores.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_docker_ps.png)
+
+## 2. Evidencia de Spring Boot levandando desde UBUNTU (curl)
+
+
+Con curl en la Ubuntu server, revisamos que la salida de la consola es un estado UP, que evidencia que el proyecto
+esta levantado.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_health.png)
+
+## 3. Evidencia de Spring Boot levandando desde WINDOWS(navegador)
+En la siguiente imagen se evidencia que tenemos acceso al servidor consumiendo la ip de la 
+maquina virtual de Ubuntu.
+
+![Evidencia Java Version](src/main/resources/assets/evidencia_health_windows.png)
+
+## 4. Explicación de la conexión a PostgreSQL externo
+La app se conecta a PostgreSQL instalado nativamente en Windows , accesible desde Ubuntu Server mediante la red Host-Only de VirtualBox 192.168.56.1.
+Antes de esa conexión es necesario modificar ciertos archivos dentro de Postgresql para que funcione como el liste_addreses.
+
+## 5. Login desde la máquina anfitriona con POSTMAN (http://192.168.56.101/auth/login)
+
+En la siguiente imagen se refleja el consumo del endpoint de login que esta alojado en Ubuntu Server.
+
+

@@ -70,6 +70,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/status/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
